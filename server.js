@@ -2,78 +2,64 @@ const express = require('express');
 const cors = require("cors");
 
 const app = express();
-
 app.use(express.json());
 app.use(cors());
 
-
-var books = [
-    {id:1,name:"Java",qty:1},
+var products = [
+  { id: 1, name: "Laptop", qty: 10 },
 ];
 
-app.get("/",(req,res)=>{
- res.send("Hello World");
+app.get("/", (req, res) => {
+  res.send("Welcome to Product Management API");
 });
 
-
-app.get("/books",(req,res)=>{
-    res.json(books);
-})
-app.get("/books/:bid",(req,res)=>{
-
-    const id = parseInt(req.params.bid);
-    const book = books.find((b1)=>b1.id==id);
-
-    if(book){
-        res.json(book);
-    }else{
-        res.status(404).json({msg:"Book not found"});
-    }
-    
-})
-
-
-app.post("/books",(req,res)=>{
-    const {id,name,qty}=req.body;
-    const newBook = {id,name,qty};
-    
-    books.push(newBook);
-    res.json({book:newBook,msg:"Book added successfully"});
-    
+app.get("/products", (req, res) => {
+  res.json(products);
 });
 
-app.put("/books/:bid",(req,res)=>{
-    const id = parseInt(req.params.bid);
-    
-    const {name} = req.body;
-    
-    const bookIndex = books.findIndex((b1)=> b1.id == id);
-    
-    if(bookIndex != -1){
-        books[bookIndex] = {...books[bookIndex],name};
-        res.json({updatedBook:books[bookIndex],msg:"Book updated successfully"});
-    }else{
-        res.status(404).json({msg:"Book not found"});
-        
-    }
+app.get("/products/:pid", (req, res) => {
+  const id = parseInt(req.params.pid);
+  const product = products.find((p) => p.id === id);
+
+  if (product) {
+    res.json(product);
+  } else {
+    res.status(404).json({ msg: "Product not found" });
+  }
 });
 
-app.delete("/books/:bid",(req,res)=>{
-    const id = parseInt(req.params.bid);
+app.post("/products", (req, res) => {
+  const { id, name, qty } = req.body;
+  const newProduct = { id, name, qty };
+  products.push(newProduct);
+  res.json({ product: newProduct, msg: "Product added successfully" });
+});
 
-    const bookIndex = books.findIndex((b1)=> b1.id == id);
-    
-     
-    if(bookIndex != -1){
-        books.splice(bookIndex,1);
-        res.json({msg:"Book deleted successfully"});
-    }else{
-        res.status(404).json({msg:"Book not found"});
-        
-    }
-})
+app.put("/products/:pid", (req, res) => {
+  const id = parseInt(req.params.pid);
+  const { name, qty } = req.body;
+  const index = products.findIndex((p) => p.id === id);
 
+  if (index !== -1) {
+    products[index] = { ...products[index], name, qty };
+    res.json({ updatedProduct: products[index], msg: "Product updated successfully" });
+  } else {
+    res.status(404).json({ msg: "Product not found" });
+  }
+});
 
-app.listen(3000,(req,res)=>{
-console.log("Server Started at Port 3000");
+app.delete("/products/:pid", (req, res) => {
+  const id = parseInt(req.params.pid);
+  const index = products.findIndex((p) => p.id === id);
+
+  if (index !== -1) {
+    products.splice(index, 1);
+    res.json({ msg: "Product deleted successfully" });
+  } else {
+    res.status(404).json({ msg: "Product not found" });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("Server started on port 3000");
 });
